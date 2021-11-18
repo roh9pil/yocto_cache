@@ -17,8 +17,13 @@ mirror를 어떻게 사용하는지 알아보기로 한다.
 4. (좀 특수한 상황으로) 어제 쓰고 남은 반죽이 있다.
 
 BitBake에서 Source mirror를 사용하는 것은 위와 같다. 
-우선, `PREMIRROR`에서 찾아본다 (1번). 실패하면 `SRC_URI`에 접속해서 가져온다 (2번). upstream uri에 접근이 안되면 (일시적인 네트웍 문제 등등) `MIRROR`에서 찾는다.
-위는 Source Code (밀가루) 를 확보하는 과정이고, Yocto에서느 prebuilt object를 위해서 `SSTATE_MIRRORS`를 지원한다.
+* `PREMIRROR`에서 찾아본다 (1번). 
+* 실패하면 `SRC_URI`에 접속해서 가져온다 (2번). 
+* upstream uri에 접근이 안되면 (일시적인 네트웍 문제 등등) `MIRROR`에서 찾는다.
+* 위는 Source Code (밀가루) 를 확보하는 과정이고, Yocto에서는 prebuilt object를 위해서 `SSTATE_MIRRORS`를 지원한다.
+
+## PREMERRIR, MIRROR 를 어떻게 설정하는가?
+
 
 
 
