@@ -22,15 +22,22 @@ BitBake에서 Source mirror를 사용하는 것은 위와 같다.
 * upstream uri에 접근이 안되면 (일시적인 네트웍 문제 등등) `MIRROR`에서 찾는다.
 * 위는 Source Code (밀가루) 를 확보하는 과정이고, Yocto에서는 prebuilt object를 위해서 `SSTATE_MIRRORS`를 지원한다.
 
-그래서, PREMIRROR, MIRROR 값을 항상 연결 가능한 곳으로 설정해주면 upstream URI가 불가능한 경우에도 소스 코드를 받을 수 있다.
+그래서, PREMIRROR, MIRROR 값을 항상 연결 가능한 곳으로 설정해주면 upstream URI엣 다운로드가 불가능한 경우에도 소스 코드를 받을 수 있다.
 그런데 PREMIRROR, MIRROR 값을 어떻게 적어야 하는 걸까?
 문법애 대한 이해가 필요하다.
 
 ## Syntax: SRC_URI를 mirror site용으로 치환
-URI를 mirror site용으로 변환해야 mirror에서 소스코드를 받아올 수 있다. 
-BitBake에서는 어떻게 치환하는 것인지 알아야, PREMIRROR와 MIRROR값을 
+BitBake에서는 SRC_URI를 정규 표현식으로 표현된 패턴을 찾아서 지정된 값으로 치환하는 방법으로 mirror site용으로 변환한다.
+변환된 uri를 사용해서 mirror site로부터 소스코드를 다운로드 받는다. 
+Upstream URI의 형식과 URI 각 부분의 패턴, 그리고 치환될 문자열의 표현 방법을 순서대로 알아본다. 
 
+### SRC_URI
 
+`scheme`://`user`:`password`@`hostname`/`pass`;`parameters`
+
+### Patterns
+
+### Replacements
 
 
 
