@@ -111,3 +111,9 @@ PREMIRRORS = "git://.*/.*;branch=master http://myserver.org/cache/ \n"
 
 각 부분의 변환결과를 조합하여 아래와 같이 새로운 위치를 생성한다.
 `http://myserver.org/cache/git2_git.yoctoproject.org.foo.myutils.git.tar.gz`
+
+
+## Reference
+* yocto project reference manual: https://yoctoproject.org/docs/current/ref-manial/ref-manual.html
+* yocto project mega manual: https://yoctoproject.org/docs/current/mega-manual/mega-manual.html
+* bitbake user manual: https://yoctoproject.org/docs/current/bitbake-user-manual/bitbake-user-manual
