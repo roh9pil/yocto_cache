@@ -10,9 +10,9 @@ Yocto 빌드 과정 중에 소스코드를 가져오는 것은 BitBake 에서 �
 아래에서는 BitBake가 베이킹할때 Recipe의 재료 (SRC_URI)를 확보하기 위해서
 mirror를 어떻게 사용하는지 알아보기로 한다.
 
-## 베이킹하려고 하는데 밀가루 반죽이 필요하다.
+## 베이킹하려고 하는데 밀가루가 필요하다.
 1. 우리집 냉장고나 다용도실에서 전에 사놓은 밀가루가 있는지 찾아본다.
-2. 집에는 없으니 인터넷으로 주문.
+2. 집에는 없으니 인터넷으로 주문한다.
 3. 인터넷이 안되거나 품절이다, 옆집에 밀가루가 있다면 빌려쓰자.
 4. (좀 특수한 상황으로) 어제 쓰고 남은 반죽이 있다.
 
@@ -22,7 +22,13 @@ BitBake에서 Source mirror를 사용하는 것은 위와 같다.
 * upstream uri에 접근이 안되면 (일시적인 네트웍 문제 등등) `MIRROR`에서 찾는다.
 * 위는 Source Code (밀가루) 를 확보하는 과정이고, Yocto에서는 prebuilt object를 위해서 `SSTATE_MIRRORS`를 지원한다.
 
-## PREMERRIR, MIRROR 를 어떻게 설정하는가?
+그래서, PREMIRROR, MIRROR 값을 항상 연결 가능한 곳으로 설정해주면 upstream URI가 불가능한 경우에도 소스 코드를 받을 수 있다.
+그런데 PREMIRROR, MIRROR 값을 어떻게 적어야 하는 걸까?
+문법애 대한 이해가 필요하다.
+
+## Syntax: SRC_URI를 mirror site용으로 치환
+URI를 mirror site용으로 변환해야 mirror에서 소스코드를 받아올 수 있다. 
+BitBake에서는 어떻게 치환하는 것인지 알아야, PREMIRROR와 MIRROR값을 
 
 
 
