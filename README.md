@@ -22,9 +22,9 @@ BitBake에서 Source mirror를 사용하는 것은 위와 같다.
 * upstream uri에 접근이 안되면 (일시적인 네트웍 문제 등등) `MIRROR`에서 찾는다.
 * 위는 Source Code (밀가루) 를 확보하는 과정이고, Yocto에서는 prebuilt object를 위해서 `SSTATE_MIRRORS`를 지원한다.
 
-그래서, PREMIRROR, MIRROR 값을 항상 연결 가능한 곳으로 설정해주면 upstream URI엣 다운로드가 불가능한 경우에도 소스 코드를 받을 수 있다.
+그래서, PREMIRROR, MIRROR 값을 항상 연결 가능한 곳으로 설정해주면 upstream URI에서 다운로드가 불가능한 경우에도 소스 코드를 받을 수 있다.
 그런데 PREMIRROR, MIRROR 값을 어떻게 적어야 하는 걸까?
-문법애 대한 이해가 필요하다.
+문법에 대한 이해가 필요하다.
 
 ## Syntax: SRC_URI를 mirror site용으로 치환
 
@@ -44,14 +44,14 @@ Upstream URI의 형식과 URI 각 부분의 패턴, 그리고 치환될 문자�
 
 ### Patterns
 parameters를 제외하고 나머지는 모두 정규 표현식으로 패턴을 지정한다.
-* scheme의 경우에는 뒤에 $를 붙여서 매칭을 시도하기 때문에 http 라고마 적으면 https를 사용하는 SRC_URI는 매칭되지 않는다.
+* scheme의 경우에는 뒤에 $를 붙여서 매칭을 시도하기 때문에 http 라고 적으면, BitBake가 http$ 로 매칭을 시도하기 때문에 https를 사용하는 SRC_URI는 매칭되지 않는다.
 * 예) git protocol, main branch를 사용하는 모든 source에 매칭되는 패턴
 ```python
 git://.*/.*;branch=main
 ```
 
 ### Replacements
-미리 정의된 문자열
+미리 정의된 문자열이 있다. Replacement에서 이 문자열이 보이면 SRC_URI에서 매칭된 문자열을 사용하겠다는 의미이다.
 * TYPE: SRC_URI의 `scheme`
 * HOST: SRC_URI의 `hostname`
 * PATH: SRC_URI의 `path`
@@ -111,6 +111,3 @@ PREMIRRORS = "git://.*/.*;branch=master http://myserver.org/cache/ \n"
 
 각 부분의 변환결과를 조합하여 아래와 같이 새로운 위치를 생성한다.
 `http://myserver.org/cache/git2_git.yoctoproject.org.foo.myutils.git.tar.gz`
-
-
-
