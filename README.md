@@ -128,7 +128,7 @@ http://myserver.org/cache/git2_git.yoctoproject.org.foo.myutils.git.tar.gz
 INHERIT += "own-mirrors"
 SOURCE_MIRROR_URL = "TYPE://mirror.local.site/PATH"
 ```
-SOURCE_MIRROR_URL의 값은 Replacements 의 문법으로 적어준다.
+SOURCE_MIRROR_URL의 값은 [Replacements](#Replacements) 의 문법으로 적어준다.
 
 
 ## 왜 PREMIRROR, MIRROR 두 개가 있을까?
