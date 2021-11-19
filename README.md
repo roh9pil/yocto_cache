@@ -121,6 +121,16 @@ PREMIRRORS = "git://.*/.*;branch=master http://myserver.org/cache/ \n"
 ```python
 http://myserver.org/cache/git2_git.yoctoproject.org.foo.myutils.git.tar.gz
 ```
+
+## SOURCE_MIRROR_URL?
+하나의 mirror site 로 한번에 설정하고 싶다면 다음과 같이 두줄을 추가해주는 것으로 설정할 수 있다.
+```python
+INHERIT += "own-mirrors"
+SOURCE_MIRROR_URL = "TYPE://mirror.local.site/PATH"
+```
+SOURCE_MIRROR_URL의 값은 Replacements 의 문법으로 적어준다.
+
+
 ## 왜 PREMIRROR, MIRROR 두 개가 있을까?
 이런 궁금증이 있었으나, 아직 공식 레퍼런스 메뉴얼에서는 찾지 못했다.
 아마도 3 strikes == 1 out 이랑 관련이 있지 않을까? 
