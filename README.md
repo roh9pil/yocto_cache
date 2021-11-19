@@ -109,8 +109,15 @@ PREMIRRORS = "git://.*/.*;branch=master http://myserver.org/cache/ \n"
 
 `git2_git.yoctoproject.org.foo.myutils.git.tar.gz` 는 마지막에 추가
 
-각 부분의 변환결과를 조합하여 아래와 같이 새로운 위치를 생성한다.
-`http://myserver.org/cache/git2_git.yoctoproject.org.foo.myutils.git.tar.gz`
+각 부분의 변환결과를 조합하여 아래와 같이 새로운 위치를 생성했다.
+```python
+http://myserver.org/cache/git2_git.yoctoproject.org.foo.myutils.git.tar.gz
+```
+
+```python
+SRC_URI = "git://git.yoctoproject.org/foo/myutils.git;branch=master;tag=123456789"
+PREMIRRORS = "git://.*/.*;branch=master http://myserver.org/cache/ \n"
+```
 
 ## 왜 PREMIRROR, MIRROR 두 개가 있을까?
 이런 궁금증이 있었으나, 아직 공식 레퍼런스 메뉴얼에서는 찾지 못했다.
