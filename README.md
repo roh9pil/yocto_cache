@@ -129,11 +129,30 @@ INHERIT += "own-mirrors"
 SOURCE_MIRROR_URL = "TYPE://mirror.local.site/PATH"
 ```
 SOURCE_MIRROR_URL의 값은 [Replacements](#Replacements) 의 문법으로 적어준다.
-
+위 설정은 아래와 같은 의미이다.
+```python
+PREMIRROR_prepend = "\
+                    git://.*/.* TYPE://mirror.local.site/PATH \n \
+                    gitsm://.*/.* TYPE://mirror.local.site/PATH \n \
+                    https?$://.*/.* TYPE://mirror.local.site/PATH \n \
+                    ftp://.*/.* TYPE://mirror.local.site/PATH \n \
+                    npm://.*/.* TYPE://mirror.local.site/PATH \n \
+                    cvs://.*/.* TYPE://mirror.local.site/PATH \n \
+                    svn://.*/.* TYPE://mirror.local.site/PATH \n \
+                    hg://.*/.* TYPE://mirror.local.site/PATH \n \
+                    bzr://.*/.* TYPE://mirror.local.site/PATH \n \
+                    p4://.*/.* TYPE://mirror.local.site/PATH \n \
+                    osc://.*/.* TYPE://mirror.local.site/PATH \n"
+```
+http로만 mirror site를 구성했다면 아래와 같이 한다.
+```python
+INHERIT += "own-mirrors"
+SOURCE_MIRROR_URL = "http://mirror.local.site/PATH"
+```
 
 ## 왜 PREMIRROR, MIRROR 두 개가 있을까?
 이런 궁금증이 있었으나, 아직 공식 레퍼런스 메뉴얼에서는 찾지 못했다.
-아마도 3 strikes == 1 out 이랑 관련이 있지 않을까? 
+아마도 이 질문은 왜 스트라이크가 3개면 아웃이냐? 왜 아웃이 3개이면 공수교대냐? 라는 질문과 같을지도 모르겠다.
 SRC_URI가 접근이 안될 경우를 대비해서 두번의 기회를 더 주는 것이니까..
 
 ## Reference
