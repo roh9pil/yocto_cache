@@ -27,15 +27,16 @@ BitBake에서 Source mirror를 사용하는 것은 위와 같다.
 문법에 대한 이해가 필요하다.
 
 ## Syntax: SRC_URI를 mirror site용으로 치환
-
+BitBake에서는 SRC_URI를 정규 표현식으로 표현된 패턴을 찾아서 매칭된 부분을 지정된 값으로 치환하는 방법으로 mirror site용으로 변환한다.
+변환된 uri를 사용해서 mirror site로부터 소스코드를 다운로드 받는다. 
+Recipe 내에서 PREMIRROR, MIRROR 를 지정해줄 수도 있지만, 
+아래 같이 conf/local.conf 파일의 `PREMIRROR_prepend` 에서 protocol 별로 패턴을 만들어 변환 방법을 지정해 줄 수도 있다.
 ```python
 PREMIRROR_prepend = "\
                     `PATTERN1` `REPLACEMENT1` \n \
                     `PATTERN2` `REPLACEMENT2` \n"
 ```
-
-BitBake에서는 SRC_URI를 정규 표현식으로 표현된 패턴을 찾아서 매칭된 부분을 지정된 값으로 치환하는 방법으로 mirror site용으로 변환한다.
-변환된 uri를 사용해서 mirror site로부터 소스코드를 다운로드 받는다. 
+PREMIRROR, MIRROR, PREMIRROR_prepend 모두 같은 문법을 사용한다.
 Upstream URI의 형식과 URI 각 부분의 패턴, 그리고 치환될 문자열의 표현 방법을 순서대로 알아본다. 
 
 ### SRC_URI
