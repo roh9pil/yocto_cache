@@ -1,4 +1,4 @@
-# Yocto Cache
+# Yocto Cache 설정
 
 Recipe의 `SRC_URI` 변수에는 소스코드를 어디에서 얻을 수 있는 장소가 저장되어 있다. 
 우리는 이것을 upstream URI 라고도 부른다.
