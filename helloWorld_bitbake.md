@@ -1,7 +1,7 @@
 # Hello BitBake
 ```
-.
-├── layer
+example
+├── hellolayer
 │   ├── conf
 │   │   └── layer.conf
 │   └── hello_bitbake.bb
