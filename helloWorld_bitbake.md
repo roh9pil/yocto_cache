@@ -1,4 +1,5 @@
 # Hello BitBake
+```
 .
 ├── layer
 │   ├── conf
@@ -10,7 +11,7 @@
     └── conf
         ├── bblayers.conf
         └── bitbake.conf
-        
+```        
 1. Setting `BBPATH`
 
    `export BBPATH="project"`
