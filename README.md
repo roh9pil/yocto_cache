@@ -155,6 +155,12 @@ SOURCE_MIRROR_URL = "http://mirror.local.site/PATH"
 아마도 이 질문은 왜 스트라이크가 3개면 아웃이냐? 왜 아웃이 3개이면 공수교대냐? 라는 질문과 같을지도 모르겠다.
 SRC_URI가 접근이 안될 경우를 대비해서 두번의 기회를 더 주는 것이니까..
 
+## 기타 설정
+* BB_GENERATE_MIRROR_TARBALLS: 현 build 의 DL_DIR 을 후속 build의 Mirror로 사용할 수 있도록 mirror tarball을 생성함
+* BB_FETCH_PREMIRRORONLY: network에서 code fetch 하지 않고 mirror에서만 받고 싶을때
+   - SSTATE_MIRROR_ALLOW_NETWORK
+   - BB_NO_NETWORK
+
 ## Reference
 * yocto project reference manual: https://yoctoproject.org/docs/current/ref-manial/ref-manual.html
 * yocto project mega manual: https://yoctoproject.org/docs/current/mega-manual/mega-manual.html
