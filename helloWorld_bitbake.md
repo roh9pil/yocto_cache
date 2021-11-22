@@ -12,10 +12,8 @@
         ├── bblayers.conf
         └── bitbake.conf
 ```        
-1. Setting `BBPATH`
+1. Setting an environment variable, `BBPATH`
 
    `export BBPATH="project"`
 
-   `mkdir project` 
-
-2. Run Bitbake
+2. Seting `BBLAYER` in conf/bbayser.conf
