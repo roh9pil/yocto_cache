@@ -19,24 +19,26 @@ mirror를 어떻게 사용하는지 알아보기로 한다.
 BitBake에서 Source mirror를 사용하는 것은 위와 같다. 
 * `PREMIRROR`에서 찾아본다 (1번). 
 * 실패하면 `SRC_URI`에 접속해서 가져온다 (2번). 
-* upstream uri에 접근이 안되면 (일시적인 네트웍 문제 등등) `MIRROR`에서 찾는다.
+* upstream uri에 접근이 안되면 (일시적인 네트웍 문제 등등) `MIRRORS`에서 찾는다.
 * 위는 Source Code (밀가루) 를 확보하는 과정이고, Yocto에서는 prebuilt object를 위해서 `SSTATE_MIRRORS`를 지원한다.
 
-그래서, PREMIRROR, MIRROR 값을 항상 연결 가능한 곳으로 설정해주면 upstream URI에서 다운로드가 불가능한 경우에도 소스 코드를 받을 수 있다.
-그런데 PREMIRROR, MIRROR 값을 어떻게 적어야 하는 걸까?
+그래서, PREMIRROR, MIRRORS 값을 항상 연결 가능한 곳으로 설정해주면 upstream URI에서 다운로드가 불가능한 경우에도 소스 코드를 받을 수 있다.
+그런데 PREMIRROR, MIRRORS 값을 어떻게 적어야 하는 걸까?
 문법에 대한 이해가 필요하다.
 
 ## Syntax: SRC_URI를 mirror site용으로 치환
 BitBake에서는 SRC_URI를 정규 표현식으로 표현된 패턴을 찾아서 매칭된 부분을 지정된 값으로 치환하는 방법으로 mirror site용으로 변환한다.
 변환된 uri를 사용해서 mirror site로부터 소스코드를 다운로드 받는다. 
-Recipe 내에서 PREMIRROR, MIRROR 를 지정해줄 수도 있지만, 
-아래 같이 conf/local.conf 파일의 `PREMIRROR_prepend` 에서 protocol 별로 패턴을 만들어 변환 방법을 지정해 줄 수도 있다.
+PREMIRROR 를 개별 recipe에서 추가해서 사용할 수 있지만, 권장하는 방식은 아니다.
+아래 같이 conf/local.conf 파일의 `PREMIRROR_prepend` 에서 protocol 별로 패턴을 만들어 변환 방법을 지정해서 쓴다.
 ```python
 PREMIRROR_prepend = "\
                     `PATTERN1` `REPLACEMENT1` \n \
                     `PATTERN2` `REPLACEMENT2` \n"
 ```
-PREMIRROR, MIRROR, PREMIRROR_prepend 모두 같은 문법을 사용한다.
+MIRRORS 변수의 경우에는 mirror.bbclass에 정의되어 있고 기본으로 활성화된다.
+
+PREMIRROR, MIRRORS, PREMIRROR_prepend 모두 같은 문법을 사용한다.
 Upstream URI의 형식과 URI 각 부분의 패턴, 그리고 치환될 문자열의 표현 방법을 순서대로 알아본다. 
 
 ### SRC_URI
