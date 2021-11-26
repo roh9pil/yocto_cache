@@ -1,37 +1,169 @@
-## Welcome to GitHub Pages
+# Yocto Cache 설정
 
-You can use the [editor on GitHub](https://github.com/roh9pil/yocto_cache/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
+Recipe의 `SRC_URI` 변수에는 소스코드를 어디에서 얻을 수 있는 장소가 저장되어 있다. 
+우리는 이것을 upstream URI 라고도 부른다.
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+그런데, upstream URI 에는 항상 접근 가능하지 않을 수도 있다.
+가용성을 위해서 Yocto는 Mirror 매커니즘을 제공한다.
 
-### Markdown
+Yocto 빌드 과정 중에 소스코드를 가져오는 것은 BitBake 에서 진행한다.
+아래에서는 BitBake가 베이킹할때 Recipe의 재료 (SRC_URI)를 확보하기 위해서
+mirror를 어떻게 사용하는지 알아보기로 한다.
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+## 베이킹하려고 하는데 밀가루가 필요하다.
+1. 우리집 냉장고나 다용도실에서 전에 사놓은 밀가루가 있는지 찾아본다.
+2. 집에는 없으니 인터넷으로 주문한다.
+3. 인터넷이 안되거나 품절이다, 옆집에 밀가루가 있다면 빌려쓰자.
+4. (좀 특수한 상황으로) 어제 쓰고 남은 반죽이 있다.
 
-```markdown
-Syntax highlighted code block
+BitBake에서 Source mirror를 사용하는 것은 위와 같다. 
+* `PREMIRROR`에서 찾아본다 (1번). 
+* 실패하면 `SRC_URI`에 접속해서 가져온다 (2번). 
+* upstream uri에 접근이 안되면 (일시적인 네트웍 문제 등등) `MIRRORS`에서 찾는다.
+* 위는 Source Code (밀가루) 를 확보하는 과정이고, Yocto에서는 prebuilt object를 위해서 `SSTATE_MIRRORS`를 지원한다.
 
-# Header 1
-## Header 2
-### Header 3
+그래서, PREMIRROR, MIRRORS 값을 항상 연결 가능한 곳으로 설정해주면 upstream URI에서 다운로드가 불가능한 경우에도 소스 코드를 받을 수 있다.
+그런데 PREMIRROR, MIRRORS 값을 어떻게 적어야 하는 걸까?
+문법에 대한 이해가 필요하다.
 
-- Bulleted
-- List
+## Syntax: SRC_URI를 mirror site용으로 치환
+BitBake에서는 SRC_URI를 정규 표현식으로 표현된 패턴을 찾아서 매칭된 부분을 지정된 값으로 치환하는 방법으로 mirror site용으로 변환한다.
+변환된 uri를 사용해서 mirror site로부터 소스코드를 다운로드 받는다. 
+PREMIRROR 를 개별 recipe에서 추가해서 사용할 수 있지만, 권장하는 방식은 아니다.
+아래 같이 conf/local.conf 파일의 `PREMIRROR_prepend` 에서 protocol 별로 패턴을 만들어 변환 방법을 지정해서 쓴다.
+```python
+PREMIRROR_prepend = "\
+                    `PATTERN1` `REPLACEMENT1` \n \
+                    `PATTERN2` `REPLACEMENT2` \n"
+```
+MIRRORS 변수의 경우에는 mirror.bbclass에 정의되어 있고 기본으로 활성화된다.
 
-1. Numbered
-2. List
+PREMIRROR, MIRRORS, PREMIRROR_prepend 모두 같은 문법을 사용한다.
+Upstream URI의 형식과 URI 각 부분의 패턴, 그리고 치환될 문자열의 표현 방법을 순서대로 알아본다. 
 
-**Bold** and _Italic_ and `Code` text
+### SRC_URI
 
-[Link](url) and ![Image](src)
+`scheme`://`user`:`password`@`hostname`/`path`;`parameters`
+
+### Patterns
+parameters를 제외하고 나머지는 모두 정규 표현식으로 패턴을 지정한다.
+* scheme의 경우에는 뒤에 $를 붙여서 매칭을 시도하기 때문에 http 라고 적으면, BitBake가 http$ 로 매칭을 시도하기 때문에 https를 사용하는 SRC_URI는 매칭되지 않는다.
+* 예) git protocol, main branch를 사용하는 모든 source에 매칭되는 패턴
+```python
+git://.*/.*;branch=main
 ```
 
-For more details see [Basic writing and formatting syntax](https://docs.github.com/en/github/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax).
+### Replacements
+미리 정의된 문자열이 있다. Replacement에서 이 문자열이 보이면 SRC_URI에서 매칭된 문자열을 사용하겠다는 의미이다.
+* TYPE: SRC_URI의 `scheme`
+* HOST: SRC_URI의 `hostname`
+* PATH: SRC_URI의 `path`
+* BASENAME: SRC_URI의 `path` 에서 마지막 '/' 뒤에 따라오는 문자열
+* MIRRORNAME: HOST와 PATH를 붙여서 만든 문자열로, ':', '/', '*'은 '.'로 치환된다.
 
-### Jekyll Themes
+파라미터는 조금 다르게 처리되는데, 먼저 scheme이 달라지면 파라미터가 의미가 없기 때문에 파라미터는 무시된다.
+scheme이 변하지 않았다며 결과는 SRC_URI에 있던 파라미터들과 Replacements에 있는 파라미터의 합집합이다.
+이때, 동일한 파라미터가 있다면 그 value는 replacement의 것을 사용한다.
 
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/roh9pil/yocto_cache/settings/pages). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
+마지막으로 path를 한번 더 점검하고 path뒤에 추가 정보를 붙여서 완성한다. 
+치환된 path 문자열이 SRC_URI의 basename으로 끝나지 않을때 아래와 같이 규칙을 적용한다.
+* scheme이 바뀌지 않았다면 basename은 SRC_URI path의 basename을 추가로 붙인다.
+  - 파일명 하나하나를 치환하는 값으로 적어두는 것은 너무 번거로운 일이니까
+* scheme이 바뀌었을때
+  - SRC_URI가 하나의 파일 (tarball 포함) 가리키고 있었다면, SRC_URI path의 basename을 뒤에 붙여준다.
+  - SRC_URI가 repository 였다면, mirrortarball 이름을 추가로 붙이는데 이건 scheme 마다 다르다.  
+    - git의 경우  git2_hostname.path.to.repo.git.tar.gz
 
-### Support or Contact
+## 예제
+```python
+SRC_URI = "git://git.yoctoproject.org/foo/myutils.git;branch=master;tag=123456789"
+PREMIRRORS = "git://.*/.*;branch=master http://myserver.org/cache/ \n"
+```
+1. Upstream
+     - scheme: "git"
+     - user: ""
+     - password: ""
+     - host: "git.yoctoproject.org"
+     - path: "foo/myutils.git"
+     - parameters: {"branch": "master", "tag": "123456789"}
+2. Pattern
+     - scheme: "git"
+     - user: ""
+     - password: ""
+     - host: ".*"
+     - path: ".*"
+     - parameters: {"branch": "master"}
+3. replacement
+     - scheme: "git"
+     - user: ""
+     - password: ""
+     - host: "myserver.org"
+     - path: "cache/"
+     - parameters: {}
 
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
+
+### 치환 결과
+- scheme: "http"
+- user: ""
+- password: ""
+- host: "myserver.org"
+- path: "cache/git2_git.yoctoproject.org.foo.myutils.git.tar.gz"
+- parameters: {}
+
+`git2_git.yoctoproject.org.foo.myutils.git.tar.gz` 는 마지막에 추가
+
+각 부분의 변환 결과를 조합하여 mirror site용 uri를 생성했다.
+주어진 SRC_URI와 PREMIRROR (pattern replacement) 를 함께 보면 아래와 같다.
+
+```python
+SRC_URI = "git://git.yoctoproject.org/foo/myutils.git;branch=master;tag=123456789"
+PREMIRRORS = "git://.*/.*;branch=master http://myserver.org/cache/ \n"
+```
+변환 결과
+```python
+http://myserver.org/cache/git2_git.yoctoproject.org.foo.myutils.git.tar.gz
+```
+
+## SOURCE_MIRROR_URL?
+하나의 mirror site 로 한번에 설정하고 싶다면 다음과 같이 두줄을 추가해주는 것으로 설정할 수 있다.
+```python
+INHERIT += "own-mirrors"
+SOURCE_MIRROR_URL = "TYPE://mirror.local.site/PATH"
+```
+SOURCE_MIRROR_URL의 값은 [Replacements](#Replacements) 의 문법으로 적어준다.
+위 설정은 아래와 같은 의미이다.
+```python
+PREMIRROR_prepend = "\
+                    git://.*/.* TYPE://mirror.local.site/PATH \n \
+                    gitsm://.*/.* TYPE://mirror.local.site/PATH \n \
+                    https?$://.*/.* TYPE://mirror.local.site/PATH \n \
+                    ftp://.*/.* TYPE://mirror.local.site/PATH \n \
+                    npm://.*/.* TYPE://mirror.local.site/PATH \n \
+                    cvs://.*/.* TYPE://mirror.local.site/PATH \n \
+                    svn://.*/.* TYPE://mirror.local.site/PATH \n \
+                    hg://.*/.* TYPE://mirror.local.site/PATH \n \
+                    bzr://.*/.* TYPE://mirror.local.site/PATH \n \
+                    p4://.*/.* TYPE://mirror.local.site/PATH \n \
+                    osc://.*/.* TYPE://mirror.local.site/PATH \n"
+```
+http로만 mirror site를 구성했다면 아래와 같이 한다.
+```python
+INHERIT += "own-mirrors"
+SOURCE_MIRROR_URL = "http://mirror.local.site/PATH"
+```
+
+## 왜 PREMIRROR, MIRROR 두 개가 있을까?
+이런 궁금증이 있었으나, 아직 공식 레퍼런스 메뉴얼에서는 찾지 못했다.
+아마도 이 질문은 왜 스트라이크가 3개면 아웃이냐? 왜 아웃이 3개이면 공수교대냐? 라는 질문과 같을지도 모르겠다.
+SRC_URI가 접근이 안될 경우를 대비해서 두번의 기회를 더 주는 것이니까..
+
+## 기타 설정
+* BB_GENERATE_MIRROR_TARBALLS: 현 build 의 DL_DIR 을 후속 build의 Mirror로 사용할 수 있도록 mirror tarball을 생성함
+* BB_FETCH_PREMIRRORONLY: network에서 code fetch 하지 않고 mirror에서만 받고 싶을때
+   - SSTATE_MIRROR_ALLOW_NETWORK
+   - BB_NO_NETWORK
+
+## Reference
+* yocto project reference manual: https://yoctoproject.org/docs/current/ref-manial/ref-manual.html
+* yocto project mega manual: https://yoctoproject.org/docs/current/mega-manual/mega-manual.html
+* bitbake user manual: https://yoctoproject.org/docs/current/bitbake-user-manual/bitbake-user-manual
